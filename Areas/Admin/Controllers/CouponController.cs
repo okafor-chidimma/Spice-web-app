@@ -122,6 +122,9 @@ namespace Spice.Areas.Admin.Controllers
                 return NotFound();
             }
             MyNewCoupon = await _db.Coupon.FindAsync(id);
+
+            //incase if i want to use input field and to display just the name
+            //var couponTypeName = Enum.GetName(typeof(Coupon.ECouponType), Int32.Parse(model.CouponType));
             if (MyNewCoupon == null)
             {
                 return NotFound();
@@ -141,6 +144,23 @@ namespace Spice.Areas.Admin.Controllers
                 return NotFound();
             }
             return View(MyNewCoupon);
+        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var couponFromDb = await _db.Coupon.FindAsync(MyNewCoupon.Id);
+            if (couponFromDb == null)
+                return NotFound();
+         
+            _db.Coupon.Remove(couponFromDb);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
