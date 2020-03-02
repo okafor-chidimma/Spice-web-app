@@ -1,0 +1,42 @@
+﻿@*
+    anything we pass to the @model is a type : either reference or value type
+    In this case, we are not passing any thing from the controller but we need to create an object of the category model class
+    so we include the model class type (Category) here so we can use tag helpers on them
+    in razor pages, i already created a variable that is of type that model class(NewBook that is of type book), so when i used @model <pageModel>, I was getting
+    the entire pageModel class into my Model variable, including the variable(NewBook) I created that is of my model class type, which
+    means that the Book Model was already existing, so referencing it was not necessary
+
+    also when i am using tag helpers, no need to reference the model using Model variable and using dot notation on it, just go staright to the prop you want
+
+*@
+@model Category
+@{
+    ViewData["Title"] = "Category | Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="text-info mt-3 mb-3">Create New Category</h2>
+
+<form method="post" asp-action="Create">
+    <div class="border backgroundWhite">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Name" class="form-control" />
+            </div>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_CreateAndBackToListButton" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

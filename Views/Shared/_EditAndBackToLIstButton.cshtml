@@ -1,0 +1,16 @@
+﻿@model int
+@* I can skip passing id to this page for my submit input element to have formaction, without it the form still submits
+    so if you must have it let it match the form's form action
+
+
+    using the tag helper asp-route-Id="<value>" automatically sets the formaction on my submit button to /Category/Edit/<id value>
+    so even without the action attr on the form it still submits to the right action
+*@
+<div class="row">
+    <div class="col-6">
+        <input type="submit" class="btn btn-info form-control" value="Update" asp-route-Id="@Model" />
+    </div>
+    <div class="col-6">
+        <a asp-action="Index" class="btn btn-success form-control">Back To List</a>
+    </div>
+</div>

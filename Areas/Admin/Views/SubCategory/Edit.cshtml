@@ -1,0 +1,117 @@
+﻿@model Spice.Models.ViewModels.SubCategoryAndCategoryViewModel
+
+@using Spice.Extensions
+@{
+    ViewData["Title"] = "Sub Category | Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-info mt-3 mb-3">Edit Sub Category</h2>
+
+@*
+    sets the action ="/Edit/<id>" because the value is edit, every other value is without id
+    in the action inside the controller, the PK(Id) has been matched by the system because the name of our method is Edit
+*@
+<partial name="_StatusMessage" model="@Model.StatusMessage" />
+<form method="post" asp-action="Edit">
+    <input type="hidden" asp-for="SubCategory.CategoryId"/>
+    <input type="hidden" asp-for="SubCategory.Id"/>
+    <div class="border backgroundWhite row">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-8 border-right">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <select id="ddlCategoryList" disabled asp-for="SubCategory.CategoryId" class="form-control" asp-items="@Model.CategoryList.ToSelectListItem(Model.SubCategory.CategoryId)">
+                    </select>
+                </div>
+                <span asp-validation-for="SubCategory.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="SubCategory.Name" class="form-control" />
+                </div>
+                <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <partial name="_EditAndBackToListButton" model="@Model.SubCategory.Id"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-3 offset-1">
+            @if (Model.SubCategoryList.Count() > 0)
+            {
+                <div class="text-info" id="subCategoryListDiv">
+                    <p class="text-center" style="font-weight:bold !important">Existing Sub Categories</p>
+
+                    <ul class="list-group" id="subCategoryList"></ul>
+                </div>
+            }
+            else
+            {
+                <div class="text-danger" id="noSubPara">
+                    <p>No Sub Category Exist, Please go ahead and Create One </p>
+                </div>
+
+
+            }
+        </div>
+
+
+    </div>
+</form>
+
+@* to add the jquery validation scripts *@
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        const updateSubCatLists = (url) => {
+            let selectedValue = $("#ddlCategoryList").val();
+            $.ajax({
+                url: url + "/" + selectedValue,
+                type: "GET",
+                dataType: "text",
+                success: (data) => {
+                    console.log(data, 'I am he');
+                    let subCatLists = JSON.parse(data);
+                    console.log(subCatLists.length, 'odisdid');
+                    if (subCatLists.length > 0) {
+                    
+                        $("#subCategoryListDiv").empty().append('<p class="text-center" style="font-weight:bold !important">Existing Sub Categories</p>');
+                        $("#subCategoryListDiv").append("<ul id='subCategoryList' class='list-group'></ul>");
+                        subCatLists.forEach((subCatList) => {
+                            $("#subCategoryList").append("<li class='list-group-item'>" + subCatList.text + "</li>")
+                        });
+
+                        $("#subCategoryListDiv").show();
+
+                    }
+                    else {
+
+                        $("#subCategoryListDiv").empty().append("<p id='noSubPara'>No Sub Category Exist, Please go ahead and Create One </p>").show();
+
+
+                    }
+
+
+                }
+            });
+        }
+
+        $(document).ready(() => {
+            updateSubCatLists("/Admin/SubCategory/GetSubCategory");
+        });
+
+        
+    </script>
+}
+
+
+

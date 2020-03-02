@@ -1,0 +1,147 @@
+﻿@model Spice.Models.ViewModels.MenuItemViewModel
+@using Spice.Extensions
+
+@{
+    ViewData["Title"] = "Menu Item | Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-info mt-3 mb-3">Edit Menu Item</h2>
+
+@*<partial name="_StatusMessage" model="@Model.StatusMessage" />*@
+<form method="post" asp-action="Create" enctype="multipart/form-data">
+    <div class="border backgroundWhite row">
+        <input type="hidden" asp-for="MyNewMenuItem.Id"/>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MyNewMenuItem.Name" class="form-control" />
+                </div>
+                <span asp-validation-for="MyNewMenuItem.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Description" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <textarea asp-for="MyNewMenuItem.Description" class="form-control" id="myTextArea"></textarea>
+                </div>
+                <span asp-validation-for="MyNewMenuItem.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Price" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MyNewMenuItem.Price" class="form-control" />
+                </div>
+                <span asp-validation-for="MyNewMenuItem.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Spicyness" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    @*                                                                      Model name                                        *@
+                    <select asp-for="MyNewMenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control"></select>
+                </div>
+                <span asp-validation-for="MyNewMenuItem.Spicyness" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Image" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input type="file" name="files" multiple class="form-control" />
+                </div>
+                <span asp-validation-for="MyNewMenuItem.Image" class="text-danger"></span>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+
+                    <select asp-for="MyNewMenuItem.CategoryId" asp-items="Model.CategoryList.ToSelectListItem(Model.MyNewMenuItem.CategoryId)" class="form-control" id="CategoryId"></select>
+                </div>
+                <span asp-validation-for="MyNewMenuItem.CategoryId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.SubCategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+
+                    <select asp-for="MyNewMenuItem.SubCategoryId" asp-items="Model.SubCategoryList.ToSelectListItem(Model.MyNewMenuItem.SubCategoryId)" class="form-control" id="SubCategoryId" name="SubCategoryId"></select>
+                </div>
+                <span asp-validation-for="MyNewMenuItem.SubCategoryId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-3 offset-1">
+            <img src="@Model.MyNewMenuItem.Image" alt="Alternate Text" style="border: 1px solid #bbb9b9;width:100%;border-radius:5px;"/>
+        </div>
+        
+        <div class="col-8">
+            <div class="col-8 offset-4">
+                <partial name="_EditAndBackToListButton" model="Model.MyNewMenuItem.Id" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@* to add the jquery validation scripts *@
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        tinymce.init({
+            selector: '#myTextArea',
+            plugins: 'lists',
+            menubar:'file edit format'
+        });
+    </script>
+
+    <script>
+        const updateSubCatLists = (url) => {
+            let selectedValue = $("#CategoryId").val();
+            let selectedValueText = $("#CategoryId option:selected" ).text();
+            $.ajax({
+                url: url + "/" + selectedValue,
+                type: "GET",
+                dataType: "text",
+                success: (data) => {
+                    console.log(data, 'I am he');
+                    let subCatLists = JSON.parse(data);
+                    console.log(subCatLists.length, 'odisdid');
+                    if (subCatLists.length > 0) {
+
+                        $("#SubCategoryId").empty();
+                        let items = "";
+                        $.each(subCatLists, (index, subCat) => {
+                            items += "<option value='" + subCat.value + "'>" + subCat.text + "</option>"
+                        });
+                        $("#SubCategoryId").append(items);
+                    } else {
+                        $("#SubCategoryId").empty().append("<option value='#'>No Sub Category for "+selectedValueText+"</option>");
+                    }
+
+                }
+            });
+        };
+        // $(document).ready(() => {
+        //    updateSubCatLists("/Admin/SubCategory/GetSubCategory");
+        //});
+
+        $("#CategoryId").on('change',() => {
+            updateSubCatLists("/Admin/SubCategory/GetSubCategory");
+        });
+
+    </script>
+
+}

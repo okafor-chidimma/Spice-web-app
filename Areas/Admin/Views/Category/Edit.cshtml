@@ -1,0 +1,37 @@
+﻿@model Category
+@{
+    ViewData["Title"] = "Category | Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-info mt-3 mb-3">Edit Category</h2>
+
+@*
+    sets the action ="/Edit/<id>" because the value is edit, every other value is without id
+    in the action inside the controller, the PK(Id) has been matched by the system because the name of our method is Edit
+*@
+<form method="post" asp-action="Edit">
+
+    <div class="border backgroundWhite">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="Name" class="form-control" />
+            </div>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_EditAndBackToListButton" model="@Model.Id" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

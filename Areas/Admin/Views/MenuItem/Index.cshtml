@@ -1,0 +1,79 @@
+﻿@model IEnumerable<MenuItem>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border backgroundWhite mt-5">
+    <div class="row mb-3">
+        <div class="col-6">
+            <h2 class="text-info">Menu Item List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <partial name="_CreateButtonPartial" />
+        </div>
+    </div>
+    <div>
+        @if (Model.Count() > 0)
+        {
+            <table class="table table-striped border">
+                <thead>
+                    <tr>
+                        <th>
+                            @* Generates html sring literals for the property or display name attribute of the property if set of the model it is called on
+            which in our case is category model
+                            *@
+                            @Html.DisplayNameFor(m => m.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.Price)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.CategoryId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.SubCategoryId)
+                        </th>
+                        <th colspan="2" class="text-right">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var menuItem in Model)
+                    {
+                    <tr>
+                        <td>
+                            @*
+            Model = Ienum of category which means it is an array(collection) of category object model
+
+            because of the above, it can be looped over to target each category object(model)
+
+            Now, DisplayFor ==>  Generates html string literals for the value of the property of the model it is called on
+            which in our case is category model Name property
+                            *@
+                            @Html.DisplayFor(m => menuItem.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => menuItem.Price)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => menuItem.Category.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => menuItem.SubCategory.Name)
+                        </td>
+                        <partial name="_EditDetailDelete" model="@menuItem.Id" />
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No Menu List Item in the List...</p>
+        }
+
+    </div>
+</div>
+

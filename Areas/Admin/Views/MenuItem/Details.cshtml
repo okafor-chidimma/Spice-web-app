@@ -1,0 +1,88 @@
+﻿@model Spice.Models.ViewModels.MenuItemViewModel
+
+
+@{
+    ViewData["Title"] = "Menu Item | Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-info mt-3 mb-3">Menu Item Details</h2>
+
+@*<partial name="_StatusMessage" model="@Model.StatusMessage" />*@
+<form method="post" asp-action="Details" enctype="multipart/form-data">
+    <div class="border backgroundWhite row">
+        <input type="hidden" asp-for="MyNewMenuItem.Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MyNewMenuItem.Name" class="form-control" readonly/>
+                </div>
+         
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Description" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <textarea asp-for="MyNewMenuItem.Description" class="form-control" id="myTextArea"></textarea>
+                </div>
+                
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Price" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MyNewMenuItem.Price" class="form-control" readonly/>
+                </div>
+                
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.Spicyness" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    @*                                                                      Model name                                        *@
+                    <select asp-for="MyNewMenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" disabled class="form-control"></select>
+                </div>
+        
+            </div>
+ 
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input type="text" asp-for="MyNewMenuItem.Category.Name" readonly class="form-control"/>
+                 </div>
+               
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MyNewMenuItem.SubCategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input type="text" asp-for="MyNewMenuItem.SubCategory.Name" readonly class="form-control"/>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-3 offset-1">
+            <img src="@Model.MyNewMenuItem.Image" alt="Alternate Text" style="border: 1px solid #bbb9b9;width:100%;border-radius:5px;" />
+        </div>
+
+        <div class="col-8">
+            <div class="col-8 offset-4">
+                <partial name="_DetailAndBackToListButton" model="Model.MyNewMenuItem.Id" />
+            </div>
+        </div>
+    </div>
+</form>
+
+

@@ -1,0 +1,67 @@
+﻿@model IEnumerable<SubCategory>
+@{
+    ViewData["Title"] = "SubCategory | Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border backgroundWhite mt-5">
+    <div class="row mb-3">
+        <div class="col-6">
+            <h2 class="text-info">Sub Category List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <partial name="_CreateButtonPartial" />
+        </div>
+    </div>
+    <div>
+        @if (Model.Count() > 0)
+        {
+            <table class="table table-striped border">
+                <thead>
+                    <tr>
+                        <th>
+                            @* Generates html sring literals for the property or display name attribute of the property if set of the model it is called on
+            which in our case is category model
+                            *@
+                            @Html.DisplayNameFor(m => m.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.Category.Name)
+                        </th>
+                        <th colspan="2" class="text-right">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var subCategory in Model)
+                    {
+                        <tr>
+                            <td>
+                                @*
+                                    Model = Ienum of category which means it is an array(collection) of category object model
+
+                                    because of the above, it can be looped over to target each category object(model)
+
+                                    Now, DisplayFor ==>  Generates html string literals for the value of the property of the model it is called on
+                                    which in our case is category model Name property
+                                *@
+                                @Html.DisplayFor(m => subCategory.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => subCategory.Category.Name)
+                            </td>
+                            <partial name="_EditDetailDelete" model="@subCategory.Id" />
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No Sub Category in the List...</p>
+        }
+
+    </div>
+</div>
+
