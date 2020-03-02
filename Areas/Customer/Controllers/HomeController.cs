@@ -10,7 +10,7 @@ using Spice.Models;
 namespace Spice.Controllers
 {
     //if we dont specify this area name, during runtime, .netcore wll go to the general controllers folder to look for it and throws error if it does not find it
-    //this way we are telling it to look for this in the customer area controller folder
+    //this way we are telling it to look for this in the customer area controller folder.
     [Area("Customer")]
     public class HomeController : Controller
     {
