@@ -4,26 +4,38 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Spice.Data;
 using Spice.Models;
+using Spice.Models.ViewModels;
 
 namespace Spice.Controllers
 {
     //if we dont specify this area name, during runtime, .netcore wll go to the general controllers folder to look for it and throws error if it does not find it
-    //this way we are telling it to look for this in the customer area controller folder
+    //this way we are telling it to look for this in the customer area controller folder.
     [Area("Customer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var IndexModelVM = new IndexViewModel()
+            {
+                CategoryList = await _db.Category.ToListAsync(),
+                CouponList = await _db.Coupon.Where(c => c.IsActive == true).ToListAsync(),
+                MenuItemList = await _db.MenuItem.Include(m => m.Category).Include(m => m.SubCategory).ToListAsync()
+            };
+            return View(IndexModelVM);
         }
 
         public IActionResult Privacy()
