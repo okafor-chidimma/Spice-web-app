@@ -1,8 +1,79 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model Spice.Models.ViewModels.IndexViewModel
+
+@{
+    ViewData["Title"] = "Landing Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@if (Model.CouponList.Count() > 0)
+{
+    <div class="border mt-3 mb-5">
+        <div class="carousel" data-ride="carousel" data-interval="2500">
+            @for (int i = 0; i < Model.CouponList.Count(); i++)
+            {
+                var base64 = Convert.ToBase64String(Model.CouponList.ToList()[i].Picture);
+                var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+                if (i == 0)
+                {
+                    <div class="carousel-item active">
+                        <img src="@imgsrc" style="height:50px;" class="d-block w-100" />
+                    </div>
+                }
+                else
+                {
+                    <div class="carousel-item">
+                        <img src="@imgsrc" style="height:50px;" class="d-block w-100" />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+<div class="backgroundWhite container mt-5 mt-5 mb-5" style="margin-top:100px !important;">
+    <ul id="menu-filters" class="list-inline text-center menu-filter-list">
+        <li class="active btn btn-secondary ml-1 mr-1" data-filter=".menu-restaurant" id="showAll">Show All</li>
+
+        @foreach (var category in Model.CategoryList)
+        {
+            <li class="ml-1 mr-1" data-filter=".@category.Name.Replace(" ",string.Empty)" id="@category.Id">@category.Name</li>
+        }
+    </ul>
+    @foreach (var category in Model.CategoryList)
+    {
+
+        <partial name="_ThumbnailMenuItem" model="@Model.MenuItemList.Where(m => m.CategoryId == category.Id)" />
+
+    }
 </div>
+
+@section Scripts{
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script>
+
+
+        $(document).ready(() => {
+            $("#menu-filters li").each(function() {
+                $(this).on('click', function () {
+                    console.log($(this).attr("id"), 'i am id');
+                    filterMethod($(this).attr("id"));
+                });
+            });
+        
+        })
+        const filterMethod = (id) => {
+            console.log("I was clicked", id);
+            $("#menu-filters li").removeClass('active btn btn-secondary');
+            $("#" + id).addClass('active btn btn-secondary');
+            var selectedFilter = $("#" + id).data("filter");
+
+            $(".menu-restaurant").fadeOut();
+
+            setTimeout(function () {
+                $(selectedFilter).slideDown();
+            }, 300);
+        }
+
+    </script>
+
+}
