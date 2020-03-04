@@ -28,7 +28,15 @@
         </div>
     </div>
 }
-<div class="backgroundWhite container mt-5 mt-5" style="margin-top:100px !important;">
+<div class="backgroundWhite container mt-5 mt-5 mb-5" style="margin-top:100px !important;">
+    <ul id="menu-filters" class="list-inline text-center menu-filter-list">
+        <li class="active btn btn-secondary ml-1 mr-1" data-filter=".menu-restaurant" id="showAll">Show All</li>
+
+        @foreach (var category in Model.CategoryList)
+        {
+            <li class="ml-1 mr-1" data-filter=".@category.Name.Replace(" ",string.Empty)" id="@category.Id">@category.Name</li>
+        }
+    </ul>
     @foreach (var category in Model.CategoryList)
     {
 
@@ -36,3 +44,36 @@
 
     }
 </div>
+
+@section Scripts{
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script>
+
+
+        $(document).ready(() => {
+            $("#menu-filters li").each(function() {
+                $(this).on('click', function () {
+                    console.log($(this).attr("id"), 'i am id');
+                    filterMethod($(this).attr("id"));
+                });
+            });
+        
+        })
+        const filterMethod = (id) => {
+            console.log("I was clicked", id);
+            $("#menu-filters li").removeClass('active btn btn-secondary');
+            $("#" + id).addClass('active btn btn-secondary');
+            var selectedFilter = $("#" + id).data("filter");
+
+            $(".menu-restaurant").fadeOut();
+
+            setTimeout(function () {
+                $(selectedFilter).slideDown();
+            }, 300);
+        }
+
+    </script>
+
+}
