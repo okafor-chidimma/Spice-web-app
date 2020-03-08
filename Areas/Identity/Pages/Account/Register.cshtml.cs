@@ -99,6 +99,7 @@ namespace Spice.Areas.Identity.Pages.Account
                     PostalCode = Input.PostalCode,
                     State = Input.State
                 };
+                string role = Request.Form["rdUser"];
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
@@ -121,8 +122,11 @@ namespace Spice.Areas.Identity.Pages.Account
                         await _roleManager.CreateAsync(new IdentityRole(SD.KitchenUser));
                     }
 
+                    if (string.IsNullOrEmpty(role))
+                        role = SD.CustomerEndUser;
+
                     //assign the user to a role
-                    await _userManager.AddToRoleAsync(user, SD.ManagerUser);
+                    await _userManager.AddToRoleAsync(user, role);
                     _logger.LogInformation("User created a new account with password.");
 
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -136,15 +140,28 @@ namespace Spice.Areas.Identity.Pages.Account
                     //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                     //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email });
-                    }
-                    else
+                    if (role == SD.CustomerEndUser)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
+
+                    return RedirectToAction("Index", "User", new { area = "Admin" });
+
+                    //if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    //{
+                    //    return RedirectToPage("RegisterConfirmation", new { email = Input.Email });
+                    //}
+                    //else
+                    //{
+                    //    if (role == SD.CustomerEndUser)
+                    //    {
+                    //        await _signInManager.SignInAsync(user, isPersistent: false);
+                    //        return LocalRedirect(returnUrl);
+                    //    }
+
+                    //    return RedirectToAction("Index", "User", new { area = "Admin" });
+                    //}
                 }
                 foreach (var error in result.Errors)
                 {

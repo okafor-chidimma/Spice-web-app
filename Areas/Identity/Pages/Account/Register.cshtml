@@ -1,4 +1,5 @@
 ﻿@page
+@using Spice.Utilities
 @model RegisterModel
 @{
     ViewData["Title"] = "Register | Home";
@@ -90,6 +91,21 @@
             </div>
             <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
         </div>
+        @*if the signed in user is of role*@ 
+        @if (User.IsInRole(SD.ManagerUser))
+        {
+            <div class="form-group row">
+                <div class="col-2">
+
+                </div>
+                <div class="col-5">
+                    <input type="radio" name="rdUser" value="@SD.ManagerUser" />@SD.ManagerUser
+                    <input type="radio" name="rdUser" value="@SD.FrontDeskUser" />@SD.FrontDeskUser
+                    <input type="radio" name="rdUser" value="@SD.KitchenUser" />@SD.KitchenUser
+                </div>
+                <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+            </div>
+        }
         <div class="form-group row">
             <div class="col-5 offset-2">
                 <button type="submit" class="btn btn-primary form-control">Register</button>
