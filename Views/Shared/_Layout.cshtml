@@ -1,4 +1,6 @@
 ﻿@using Spice.Utilities
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,13 +18,13 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand text-white-50" asp-area="Customer" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/mild.png"/>
-                    <img src="~/images/spicy.png"/>
-                    <img src="~/images/verySpicy.png"/>
+                    <img src="~/images/mild.png" />
+                    <img src="~/images/spicy.png" />
+                    <img src="~/images/verySpicy.png" />
                     <span class="text-info">
                         Spice
                     </span>
-                    
+
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -46,10 +48,18 @@
                                 </div>
                             </li>
                         }
-
                         <li class="nav-item dropdown text-white">
                             <i class="fas fa-shopping-cart"></i>
-                            &nbsp; (0)
+                            &nbsp;
+
+                            @{
+                                var count = 0;
+                                if (HttpContextAccessor.HttpContext.Session.GetInt32(SD.ssShoppingCartCount) != null)
+                                {
+                                    count = (int)HttpContextAccessor.HttpContext.Session.GetInt32(SD.ssShoppingCartCount);
+                                }
+                            }
+                            (@count)
                         </li>
                     </ul>
                 </div>
