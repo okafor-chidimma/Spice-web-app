@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Spice.Data;
 using Spice.Models;
 using Spice.Models.ViewModels;
+using Spice.Utilities;
 
 namespace Spice.Areas.Admin.Controllers
 {
+    
     [Area("Admin")]
+    [Authorize(Roles = SD.ManagerUser)]
     public class SubCategoryController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -25,7 +29,7 @@ namespace Spice.Areas.Admin.Controllers
         //GET SubCategory Index page
         public async Task<IActionResult> Index()
         {
-            var subCategories = await _db.SubCategory.Include(s=>s.Category).ToListAsync();
+            var subCategories = await _db.SubCategory.Include(s => s.Category).ToListAsync();
             return View(subCategories);
         }
 
@@ -34,7 +38,7 @@ namespace Spice.Areas.Admin.Controllers
         {
             SubCategoryAndCategoryViewModel subCatCreateModel = new SubCategoryAndCategoryViewModel()
             {
-                CategoryList =  await _db.Category.ToListAsync(),
+                CategoryList = await _db.Category.ToListAsync(),
                 SubCategory = new Models.SubCategory(),
                 SubCategoryList = await _db.SubCategory.OrderBy(s => s.Name).Select(s => s.Name).ToListAsync()
             };
@@ -51,7 +55,7 @@ namespace Spice.Areas.Admin.Controllers
                 var doesItExist = _db.SubCategory.Include(s => s.Category).Where(s => s.Name == model.SubCategory.Name && s.Category.Id == model.SubCategory.CategoryId);
                 if (doesItExist.Count() > 0)
                 {
-                    StatusMessage = "Error: Sub Category Exists Under "+doesItExist.First().Category.Name+" category. Please find a new name";
+                    StatusMessage = "Error: Sub Category Exists Under " + doesItExist.First().Category.Name + " category. Please find a new name";
                 }
                 else
                 {
@@ -127,7 +131,7 @@ namespace Spice.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                                                  //using eager loading to add the Category Table
+                //using eager loading to add the Category Table
                 var doesItExist = _db.SubCategory.Include(s => s.Category).Where(s => s.Name == model.SubCategory.Name && s.Category.Id == model.SubCategory.CategoryId);
                 if (doesItExist.Count() > 0)
                 {
