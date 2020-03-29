@@ -14,6 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Spice.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Spice.Models;
+using Spice.Utilities;
+using Stripe;
 
 namespace Spice
 {
@@ -33,13 +36,38 @@ namespace Spice
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             //to register the role manager
-            services.AddIdentity<IdentityUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<IdentityUser,IdentityRole>(options =>
+                {
+                    //for the password settings, to customise the password a user will supply
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredUniqueChars = 6;
+                    options.SignIn.RequireConfirmedAccount = true;
+                }
+                
+            )
                 //the token for sending email
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            //to register the email service
             services.AddSingleton<IEmailSender, EmailSender>();
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            //to use memory caching
+            services.AddMemoryCache();
+            //services.AddTransient<ICarService, CarService>();
+
+
+            //to configure the stripe payment gateway
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+
+
+            //application cookie controls the path to pages and any customising we have to do on the identity pages will be done on it
+            //to specify the path for our login,accessdenied and logout pages
             services.ConfigureApplicationCookie(options =>
 
             {
@@ -51,6 +79,8 @@ namespace Spice
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 
             });
+
+            //to be able to use session
             services.AddSession(options =>
             {
                 options.Cookie.IsEssential = true;
@@ -76,6 +106,10 @@ namespace Spice
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            
+            //to set stripe to use api key in appsettings
+            StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
+
 
             app.UseRouting();
             app.UseSession();
