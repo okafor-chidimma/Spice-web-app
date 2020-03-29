@@ -1,0 +1,33 @@
+﻿@model Spice.Models.ShoppingCart
+<div class="row">
+    <div class="d-none d-lg-block col-lg-2 text-center py-2">
+        <img src="@Model.MenuItem.Image" class="rounded" width="120" height="80" />
+    </div>
+    <div class="col-12 text-sm-center col-lg-5 text-lg-left">
+        <h4><strong>@Model.MenuItem.Name</strong></h4>
+        <h4><small>@Model.MenuItem.Description</small></h4>
+    </div>
+    <div class="col-12 text-sm-center col-lg-5 text-lg-right row">
+        <div class="col-4 text-md-right" style="padding-top:5px;">
+            <h6><strong>#@(Model.MenuItem.Price / 100) <span class="text-muted">x</span> @Model.Count </strong></h6>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-6">
+            <div class="float-right mx-1">
+                <button type="submit" class="btn btn-primary" asp-action="plus" asp-route-cartId="@Model.Id">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="float-right mx-1">
+                <button type="submit" class="btn btn-danger" asp-action="minus" asp-route-cartId="@Model.Id">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-2 col-sm-4 col-lg-2 text-right">
+            <button type="submit" class="btn btn-outline-danger" asp-action="remove" asp-route-cartId="@Model.Id">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<hr />

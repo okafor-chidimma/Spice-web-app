@@ -39,7 +39,7 @@ namespace Spice.Controllers
                 CouponList = await _db.Coupon.Where(c => c.IsActive == true).ToListAsync(),
                 MenuItemList = await _db.MenuItem.Include(m => m.Category).Include(m => m.SubCategory).ToListAsync()
             };
-            //incase if a user closes the tab and opens it again
+            //incase if a user closes the tab and opens it again and you are still logged in
             var claimsIdentity = (ClaimsIdentity)this.User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             if(claim != null)

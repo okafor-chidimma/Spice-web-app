@@ -1,0 +1,89 @@
+﻿@model Spice.Models.ViewModels.OrderDetailsCart
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form method="post">
+    <div class="backgroundWhiteBorder">
+        @if (Model.ListCart.Count > 0)
+        {
+            <input id="userId" asp-for="@Model.ListCart[0].ApplicationUserId" hidden />
+            <div class="container">
+                <div class="card">
+                    <div class="card-header bg-dark text-light ml-0 row container">
+                        <div class="col-6">
+                            <i class="fa fa-shopping-cart"></i> &nbsp;
+                            Shopping Cart
+                        </div>
+                        <div class="col-6 text-right">
+                            <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-info btn-sm">Continue Shopping</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in Model.ListCart)
+                        {
+                            <partial name="_ListCartItem" model="@item" />
+                        }
+                        <div class="row">
+                            <div class="col-12 col-md-5">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <input asp-for="@Model.OrderHeader.CouponCode" id="txtCouponCode" class="form-control" placeholder="coupon code..." />
+                                    </div>
+                                    <div class="col-5" style="margin-top:2px;">
+                                        <button type="submit" class="btn btn-sm form-control btn-outline-success" id="btnCoupon" asp-action="AddCoupon">
+                                            Apply
+                                        </button>
+                                        <button type="submit" class="btn btn-sm form-control btn-outline-danger" id="btnRemoveCoupon" asp-action="RemoveCoupon">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 offset-md-1 col-lg-4 offset-lg-3 pr-4">
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between bg-light">
+                                        <span class="text-info"> Total (NAIRA)</span>
+                                        <strong class="text-info"># <span id="txtOrderTotal">@Model.OrderHeader.OrderTotal</span></strong>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="col-12 col-lg-4 offset-lg-8 col-md-6 offset-md-6">
+                            <a asp-action="Summary" asp-area="Customer" asp-controller="Cart" class="btn btn-success form-control">Summary</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+        else
+        {
+            <p> No items added to the shopping cart...</p>
+        }
+    </div>
+</form>
+@section Scripts{ 
+    
+    <script>
+        $(document).ready(function () {
+            console.log("i have jquery");
+            var couponValue = $("#txtCouponCode").val();
+            console.log($("#txtCouponCode").val(),"val");
+            if (couponValue.length > 0) {
+                console.log("i have value");
+                $("#btnRemoveCoupon").show();
+                $("#btnCoupon").hide();
+            } else {
+                console.log("i have no value");
+                $("#btnRemoveCoupon").hide()
+                $("#btnCoupon").show();
+            }
+        });
+    </script>
+}
+
