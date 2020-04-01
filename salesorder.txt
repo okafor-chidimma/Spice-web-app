@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using E4S.Data;
+using E4S.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+
+namespace BizManager.Controllers.AccountInventory
+{
+    public class SalesOrderController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public SalesOrderController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+        private Guid getOrg()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var orgId = _context.Users.Where(x => x.Id == userId).FirstOrDefault().OrganisationId;
+
+            var orgdetails = _context.Organisations.Where(x => x.Id == orgId).FirstOrDefault();
+            ViewData["OrganisationName"] = orgdetails.OrganisationName;
+            ViewData["OrganisationImage"] = orgdetails.ImageUrl;
+
+            return orgId;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var orgId = getOrg();
+            var saleOrders = await _context.SalesOrders.Where(x => x.OrganisationId == orgId).OrderByDescending(x => x.DeliveryDate).ToListAsync();
+
+            ViewData["PaymentAccountListExpense"] = new SelectList(_context.PaymentAccounts.Include(x => x.AccountSubType).Where(x => x.OrganisationId == orgId), "AccountId", "AccountName", null, "AccountSubType.AccountName");
+            ViewData["AccountCategoryListTransaction"] = new SelectList(_context.AccountCategories.Where(x => x.OrganisationId == orgId || x.IsSystemCategory == true), "Id", "Name");
+            //to get the vendors name
+
+            foreach (var purchaseOrder in purchaseOrders)
+            {
+                var vendorname = await _context.Vendors.Where(v => v.Id == purchaseOrder.VendorId).Select(v => v.VendorName).FirstOrDefaultAsync();
+                ViewData[purchaseOrder.VendorId.ToString()] = vendorname;
+            }
+
+
+            return View(purchaseOrders);
+        }
+
+
+    }
+}
