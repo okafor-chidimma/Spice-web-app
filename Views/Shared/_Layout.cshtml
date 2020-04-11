@@ -51,8 +51,38 @@
                                 </div>
                             </li>
                         }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="Order" asp-action="OrderHistory" class="nav-link text-white">
+                                    Order History
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.ManagerUser))
+                        {
+                            <li class="nav-item dropdown text-white-50">
+                                <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Order
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDown">
+                                    @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.ManagerUser))
+                                    {
+                                        <a class="dropdown-item" asp-action="ManageOrder" asp-controller="Order" asp-area="Customer">Manage Order</a>
+                                    }
+                                    @if (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
+                                    {
+                                        <a class="dropdown-item" asp-action="OrderPickup" asp-controller="Order" asp-area="Customer">Order Pickup</a>
+                                    }
+                                </div>
+
+                            </li>
+                        }
+
+
                         <li class="nav-item dropdown text-white">
-                            <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="nav-link">
+                            <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="nav-link text-white">
 
                                 <i class="fa fa-shopping-cart"></i>
                                 &nbsp;

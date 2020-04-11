@@ -26,6 +26,12 @@ namespace Spice.Models
 
         [Required]
         //to display as a currency
+        //default seperator for numbers to the left of dp = ,
+        //default seperator for numbers to the right of dp = .
+        //default number of values after dp = 2,
+        //default group size for numbers to the left of dp = 3,
+        //default currency symbol since it picks the current culture which is Nigeria, #
+        //so when i use displayfor, all these are applied
         [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Order Total")]
         public double OrderTotal { get; set; }

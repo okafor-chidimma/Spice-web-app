@@ -24,8 +24,10 @@
                     <thead>
                         <tr>
                             <th>
-                                @* Generates html sring literals for the property or display name attribute of the property if set of the model it is called on
+                                @* Generates html string literals for the property or display name attribute of the property for the set of the model it is called on
                             which in our case is category model
+                                    this means that it takes the first item (category object) in a particular collection which in our case is an IEnumerable<Category Objects> and displays either Display name attribute or the property Name of that first item. for e.g Name is a property in Category Model
+                                    "m" here represents the one item in the collection
                                 *@
                                 @Html.DisplayNameFor(m => m.Name)
                             </th>
