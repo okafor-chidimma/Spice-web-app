@@ -37,6 +37,7 @@ namespace Spice.Areas.Customer.Controllers
             //get the users id after logging in
             var claimsIdentity = (ClaimsIdentity)this.User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            //User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             //retrieve all the items this user added to cart
             var userItemsInCartFromDb = await _db.ShoppingCart.Where(s => s.ApplicationUserId == claim.Value).ToListAsync();
@@ -177,6 +178,8 @@ namespace Spice.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
+
+        //the data is sent to stripe to process after which they send it back with information including a token
         public async Task<IActionResult> SummaryPost(string stripeToken)
         {
 
@@ -196,7 +199,7 @@ namespace Spice.Areas.Customer.Controllers
             //initializing the list of order details objects
             List<OrderDetails> orderDetailsList = new List<OrderDetails>();
 
-            //saving the order header
+            //saving the order header so as to retrieve the orderId
             _db.OrderHeader.Add(ListCartVM.OrderHeader);
             await _db.SaveChangesAsync();
 
@@ -276,7 +279,7 @@ namespace Spice.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
-            //action name, controller, what i want to pass to the action method
+            //                         action name, controller, what i want to pass to the action method
             //return RedirectToAction("Confirm", "Order", new { id = ListCartVM.OrderHeader.Id });
         }
 

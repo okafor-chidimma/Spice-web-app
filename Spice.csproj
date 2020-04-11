@@ -19,7 +19,6 @@
 
 
   <ItemGroup>
-    <Folder Include="NewFolder\" />
     <Folder Include="wwwroot\images\UploadedImage\" />
   </ItemGroup>
 
