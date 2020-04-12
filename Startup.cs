@@ -91,19 +91,23 @@ namespace Spice
 
 
             //for 3rd party authentication
+            //different ways of accessing the secret keys stored in the secret.json file
             services.AddAuthentication()
                 .AddFacebook(facebookOptions =>
                     {
-                        facebookOptions.AppId = "648320942410013";
-                        facebookOptions.AppSecret = "49d58ac390a72044a505456c868eb93b";
+                        //way 1
+                        facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                        facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
                     })
                 .AddGoogle(options =>
                      {
+                         //way 2
+                         //my secret keys are being accessed using the configuration interface
                          IConfigurationSection googleAuthNSection =
                              Configuration.GetSection("Authentication:Google");
 
-                         options.ClientId = "537482627718-b94729aubsa8u9jt8e4s7gj6c3jmid4l.apps.googleusercontent.com";
-                         options.ClientSecret = "W74brhDD3Fu3fLDV8mXzysWm";
+                         options.ClientId = googleAuthNSection["ClientId"];
+                         options.ClientSecret = googleAuthNSection["ClientSecret"];
                      });
         }
 
