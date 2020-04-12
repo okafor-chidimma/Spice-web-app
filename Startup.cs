@@ -88,6 +88,23 @@ namespace Spice
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
             });
+
+
+            //for 3rd party authentication
+            services.AddAuthentication()
+                .AddFacebook(facebookOptions =>
+                    {
+                        facebookOptions.AppId = "648320942410013";
+                        facebookOptions.AppSecret = "49d58ac390a72044a505456c868eb93b";
+                    })
+                .AddGoogle(options =>
+                     {
+                         IConfigurationSection googleAuthNSection =
+                             Configuration.GetSection("Authentication:Google");
+
+                         options.ClientId = "537482627718-b94729aubsa8u9jt8e4s7gj6c3jmid4l.apps.googleusercontent.com";
+                         options.ClientSecret = "W74brhDD3Fu3fLDV8mXzysWm";
+                     });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
