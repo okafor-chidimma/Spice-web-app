@@ -146,7 +146,7 @@ namespace Spice.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
 
-                    return RedirectToAction("Index", "User", new { area = "Admin" });
+                    //return RedirectToAction("Index", "User", new { area = "Admin" });
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

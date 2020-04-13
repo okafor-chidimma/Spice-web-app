@@ -53,6 +53,9 @@ namespace Spice
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            //to register the dbinitializer
+            services.AddScoped<IDbIntializer, DbInitializer>();
+
             //to register the email service
             //I can use add transisent
             services.AddTransient<IEmailSender, EmailSender>();
@@ -129,7 +132,7 @@ namespace Spice
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbIntializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -148,7 +151,8 @@ namespace Spice
             //to set stripe to use api key in appsettings
             StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
 
-
+            //seed the data
+            dbInitializer.Initialize();
             app.UseRouting();
             app.UseSession();
             app.UseAuthentication();
