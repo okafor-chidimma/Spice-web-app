@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Spice.Data;
@@ -19,12 +20,14 @@ namespace Spice.Areas.Customer.Controllers
     [Authorize]
     public class CartController : Controller
     {
+        private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _db;
         [BindProperty]
         public OrderDetailsCart ListCartVM { get; set; }
-        public CartController(ApplicationDbContext db)
+        public CartController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
         public async Task<IActionResult> Index()
         {
@@ -268,6 +271,24 @@ namespace Spice.Areas.Customer.Controllers
 
             if (charge.Status.ToLower() == "succeeded")
             {
+                //send email
+                //They both gain access to Users Table
+                //var userEmail = _db.Users.FirstOrDefault(u => u.Id == claim.Value);
+                var email = _db.ApplicationUser.FirstOrDefault(u => u.Id == claim.Value).Email;
+                string subject = $"Spice - Restaurant: Order Confirmation for Order with Id = {ListCartVM.OrderHeader.Id}";
+                string message = "Your Order has been placed successfully";
+
+                //to send the mail
+                try
+                {
+                    await _emailSender.SendEmailAsync(email, subject, message);
+
+                }catch(Exception ex)
+                {
+                    throw new Exception($"Could not send {ex}");
+                }
+
+
                 ListCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
                 ListCartVM.OrderHeader.Status = SD.StatusSubmitted;
             }
@@ -278,9 +299,9 @@ namespace Spice.Areas.Customer.Controllers
 
             await _db.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+           // return RedirectToAction("Index", "Home");
             //                         action name, controller, what i want to pass to the action method
-            //return RedirectToAction("Confirm", "Order", new { id = ListCartVM.OrderHeader.Id });
+            return RedirectToAction("Confirm", "Order", new { id = ListCartVM.OrderHeader.Id });
         }
 
     }

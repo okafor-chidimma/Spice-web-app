@@ -52,8 +52,12 @@ namespace Spice
                 //the token for sending email
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             //to register the email service
-            services.AddSingleton<IEmailSender, EmailSender>();
+            //I can use add transisent
+            services.AddTransient<IEmailSender, EmailSender>();
+
+
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
@@ -61,9 +65,22 @@ namespace Spice
             services.AddMemoryCache();
             //services.AddTransient<ICarService, CarService>();
 
+            //this is me configuring a class that I want to be adding to other files through Dependency Injection.
+            //this method adds the said class to the IOptions<<ClassName>> <Variable> and makes it available to all the files in your project
 
             //to configure the stripe payment gateway
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+            //during the configuration in the line above, i am telling the system that in my configuration(which is one of the ways of accessing secret keys), it will find a section named Stripe, that when it does, it should link each property of the stripe section to each property of the StripeSettings class that matches by name.
+            //this now makes the StripeSettings class available with the values set from above all through the project and can be accessed via dependency Injection
+
+            //this also means that this is a way of registering this our service but since we do not have an interface to register the service with, we will use the system's default interface "IOptions"
+
+            //this is me configuring a class that I want to be adding to other files through Dependency Injection.
+            //this method adds it to the IOptions<<ClassName>> <Variable> and makes it available to all the files in your project
+            //Notice i did not use Configuration.GetSection("<SectionName>"), this is because in my secrets .json file, i stored the send grid api key as a key:value pair and not as a section like stripe
+            //note that the key name is SendGridKey which matches the only property in EmailOptions Class
+            services.Configure<EmailOptions>(Configuration);
+
 
 
             //application cookie controls the path to pages and any customising we have to do on the identity pages will be done on it

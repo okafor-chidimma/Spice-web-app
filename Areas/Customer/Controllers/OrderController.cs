@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Spice.Data;
@@ -17,12 +18,14 @@ namespace Spice.Areas.Customer.Controllers
     [Area("Customer")]
     public class OrderController : Controller
     {
+        private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _db;
         //this is the number of items to be displayed per page
         private int PageSize = 2;
-        public OrderController(ApplicationDbContext db)
+        public OrderController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
 
         [Authorize]
@@ -131,8 +134,21 @@ namespace Spice.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
             //Email logic to notify user that order is ready for pickup
-            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - Order Ready for Pickup " + orderHeader.Id.ToString(), "Order is ready for pickup.");
+            var email = _db.ApplicationUser.FirstOrDefault(u => u.Id == orderHeader.UserId).Email;
+            string subject = $"Spice - Restaurant: Order Ready for Pick for Order with Id = {orderHeader.Id}";
+            string message = "Your Order is ready for pick up";
 
+            //to send the mail
+            try
+            {
+                await _emailSender.SendEmailAsync(email, subject, message);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Could not send {ex}");
+            }
+            
 
             return RedirectToAction("ManageOrder", "Order");
         }
@@ -144,8 +160,22 @@ namespace Spice.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
             await _db.SaveChangesAsync();
-            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - Order Cancelled " + orderHeader.Id.ToString(), "Order has been cancelled successfully.");
 
+            var email = _db.ApplicationUser.FirstOrDefault(u => u.Id == orderHeader.UserId).Email;
+            string subject = $"Spice - Restaurant: Order Cancellation for Order with Id = {orderHeader.Id}";
+            string message = "Your Order has been cancelled successfully";
+
+            //to send the mail
+            try
+            {
+                await _emailSender.SendEmailAsync(email, subject, message);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Could not send {ex}");
+            }
+            
             return RedirectToAction("ManageOrder", "Order");
         }
 
@@ -272,8 +302,20 @@ namespace Spice.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(orderId);
             orderHeader.Status = SD.StatusCompleted;
             await _db.SaveChangesAsync();
-            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - Order Completed " + orderHeader.Id.ToString(), "Order has been completed successfully.");
+            var email = _db.ApplicationUser.FirstOrDefault(u => u.Id == orderHeader.UserId).Email;
+            string subject = $"Spice - Restaurant: Order Completion for Order with Id = {orderHeader.Id}";
+            string message = "Your Order has been ccompleted successfully";
 
+            //to send the mail
+            try
+            {
+                await _emailSender.SendEmailAsync(email, subject, message);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Could not send {ex}");
+            }
             return RedirectToAction("OrderPickup", "Order");
         }
 

@@ -54,32 +54,32 @@
                     <th>
                         Total Items
                     </th>
-                    <th>Action</th>
+                    <th now>Action</th>
 
                 </tr>
                 @foreach (var item in Model.Orders)
                 {
                     <tr>
-                        <td>
+                        <td style="white-space: nowrap">
                             @Html.DisplayFor(m => item.OrderHeader.Id)
                         </td>
-                        <td>
+                        <td style="white-space: nowrap">
                             @Html.DisplayFor(m => item.OrderHeader.PickupName)
                         </td>
-                        <td>
+                        <td style="white-space: nowrap">
                             @Html.DisplayFor(m => item.OrderHeader.ApplicationUser.Email)
                         </td>
-                        <td>
+                        <td style="white-space: nowrap">
                             @Html.DisplayFor(m => item.OrderHeader.PickUpTime)
                         </td>
-                        <td>
+                        <td style="white-space: nowrap">
 
                             @Html.DisplayFor(m => item.OrderHeader.OrderTotal)
                         </td>
-                        <td>
+                        <td style="white-space: nowrap">
                             @Html.DisplayFor(m => item.OrderDetails.Count)
                         </td>
-                        <td>
+                        <td style="white-space: nowrap">
                             <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
                                 <i class="far fa-list-alt"></i> Details
                             </button>
